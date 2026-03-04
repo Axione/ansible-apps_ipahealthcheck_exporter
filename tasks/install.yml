@@ -1,0 +1,73 @@
+---
+- name: "Check for ipahealthcheck_exporter binary"
+  ansible.builtin.stat:
+    path: "{{ ipahealthcheck_exporter_install_dir }}/ipahealthcheck_exporter"
+  changed_when: false
+  register: ipahealthcheck_exporter_install
+
+- name: "Install tasks"
+  when: not ipahealthcheck_exporter_install.stat.exists or ipahealthcheck_exporter_force_install|bool
+  block:
+    - name: "Install requierements"
+      ansible.builtin.package:
+        name: ["ca-certificates", "unzip", "tar"]
+        state: present
+
+    - name: "Ensure install dir exists"
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: directory
+        mode: '0755'
+      with_items:
+        - '{{ ipahealthcheck_exporter_install_dir }}'
+        - '{{ ipahealthcheck_exporter_temp_dir }}/ipahealthcheck_exporter'
+        - '/var/log/ipa/healthcheck'
+
+    - name: "Download ipahealthcheck_exporter..."
+      ansible.builtin.get_url:
+        url: '{{ ipahealthcheck_exporter_url }}'
+        dest: '{{ ipahealthcheck_exporter_temp_dir }}/{{ ipahealthcheck_exporter_tgz }}'
+        timeout: '60'
+        mode: '0644'
+
+    - name: "Unarchive ipahealthcheck_exporter..."
+      ansible.builtin.unarchive:
+        src: '{{ ipahealthcheck_exporter_temp_dir }}/{{ ipahealthcheck_exporter_tgz }}'
+        dest: '{{ ipahealthcheck_exporter_temp_dir }}/ipahealthcheck_exporter'
+        extra_opts: [--strip-components=1]
+        remote_src: true
+        mode: '0644'
+
+    - name: "Copy ipahealthcheck_exporter binary..."
+      ansible.builtin.copy:
+        src: '{{ ipahealthcheck_exporter_temp_dir }}/ipahealthcheck_exporter/ipahealthcheck_exporter'
+        dest: '{{ ipahealthcheck_exporter_install_dir }}/ipahealthcheck_exporter'
+        remote_src: true
+        mode: '0755'
+
+    - name: "Remove temporary directory"
+      ansible.builtin.file:
+        path: '{{ ipahealthcheck_exporter_temp_dir }}/ipahealthcheck_exporter'
+        state: absent
+
+- name: "Create systemd for ipahealthcheck_exporter"
+  ansible.builtin.template:
+    src: 'ipahealthcheck_exporter.service.j2'
+    dest: '/etc/systemd/system/ipahealthcheck_exporter.service'
+    mode: '0640'
+  notify: "Restart ipahealthcheck_exporter"
+
+- name: "Enable and Start ipahealthcheck_exporter.service"
+  ansible.builtin.service:
+    name: ipahealthcheck_exporter
+    state: started
+    enabled: true
+    daemon_reload: true
+
+
+      #- name: "Copy ipa-healthcheck binary..."
+      #  ansible.builtin.copy:
+      #    src: 'ipa-healthcheck'
+      #    dest: '{{ ipahealthcheck_exporter_install_dir }}/ipahealthcheck'
+      #    mode: '0755'
+      #  with_items:

@@ -1,0 +1,24 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=Prometheus ipahealthcheck Exporter
+After=network-online.target
+StartLimitInterval=0
+
+[Service]
+Type=simple
+Restart=always
+ExecStart={{ ipahealthcheck_exporter_install_dir }}/ipahealthcheck-exporter \
+    -addresss "{{ ipahealthcheck_exporter_address }}" \
+    -ipahealthcheck-log-path "{{ ipahealthcheck_exporter_ipahealthcheck_log_path }}" \
+    -ipahealthcheck-path "{{ ipahealthcheck_exporter_ipahealthcheck_path }}" \
+    -metrics-path {{ ipahealthcheck_exporter_metrics_path }} \
+    -port {{ ipahealthcheck_exporter_port }}
+
+ExecReload=/bin/kill -HUP $MAINPID
+SyslogIdentifier=ipahealthcheck-exporter
+RestartSec=1
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,5 @@
+---
+- name: "Restart ipahealthcheck_exporter"
+  ansible.builtin.service:
+    name: "ipahealthcheck_exporter"
+    state: "restarted"
