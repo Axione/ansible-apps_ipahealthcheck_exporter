@@ -20,11 +20,11 @@
 
 ## Description
 
-Deploy [freeipa_exporter](https://github.com/boynux/freeipa-exporter) to expose freeipa metrics to prometheus.
+Deploy ipahealthcheck_exporter to expose metrics to prometheus.
 
 ## Requirements
 
-none
+- lotusnoir.system_repo_epel
 
 ## Role variables
 
@@ -39,6 +39,10 @@ See [variables](/defaults/main.yml) for more details.
           gather_facts: true
           roles:
             - role: ansible-apps_ipahealthcheck_exporter
+
+## Grafana Dashboard
+
+You can find a grafana dashboard [here](https://grafana.com/grafana/dashboards/)
 
 ## License
 

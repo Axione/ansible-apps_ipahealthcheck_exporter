@@ -2,41 +2,22 @@
 galaxy_info:
   author: lotusnoir
   role_name: apps_ipahealthcheck_exporter
-  description: "Deploy [freeipa_exporter](https://github.com/boynux/freeipa-exporter) to expose freeipa metrics to prometheus."
+  description: "Deploy ipahealthcheck_exporter to expose metrics to prometheus."
   license: "Apache License, Version 2.0"
   min_ansible_version: "2.8"
 
   platforms:
-    - name: "Ubuntu"
-      versions:
-        - "focal"
-        - "jammy"
-        - "noble"
-    - name: "Debian"
-      versions:
-        - "buster"
-        - "bullseye"
-        - "bookworm"
-        - "trixie"
     - name: "Rocky"
       versions:
-        - "8"
-        - "9"
         - "10"
+        - "9"
     - name: "OracleLinux"
       versions:
-        - "8"
-        - "9"
         - "10"
-    - name: "RedHat"
-      versions:
-        - "8"
         - "9"
-        - "10"
 
   galaxy_tags:
-    - freeipa
+    - ipa
     - exporter
-    - prometheus
 
 dependencies: []

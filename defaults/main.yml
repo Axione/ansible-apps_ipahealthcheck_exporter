@@ -10,6 +10,6 @@ ipahealthcheck_exporter_force_install: false
 # Systemd options
 ipahealthcheck_exporter_address: "0.0.0.0"
 ipahealthcheck_exporter_ipahealthcheck_log_path: "/var/log/ipa/ipahealthcheck.log"
-ipahealthcheck_exporter_ipahealthcheck_path: "{{ ipahealthcheck_exporter_install_dir }}"
+ipahealthcheck_exporter_ipahealthcheck_path: "/bin/ipa-healthcheck"
 ipahealthcheck_exporter_metrics_path: "/metrics"
 ipahealthcheck_exporter_port: "9128"

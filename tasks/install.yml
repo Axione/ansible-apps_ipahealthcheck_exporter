@@ -10,7 +10,7 @@
   block:
     - name: "Install requierements"
       ansible.builtin.package:
-        name: ["ca-certificates", "unzip", "tar"]
+        name: ["ca-certificates", "unzip", "tar", "ipa-healthcheck"]
         state: present
 
     - name: "Ensure install dir exists"
@@ -21,7 +21,23 @@
       with_items:
         - '{{ ipahealthcheck_exporter_install_dir }}'
         - '{{ ipahealthcheck_exporter_temp_dir }}'
-        - '/var/log/ipa/healthcheck'
+        - '{{ ipahealthcheck_exporter_ipahealthcheck_log_path | dirname }}'
+
+    - name: "Ensure ipahealthcheck log file exists"
+      ansible.builtin.file:
+        path: "{{ ipahealthcheck_exporter_ipahealthcheck_log_path }}"
+        state: touch
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Ensure systemd override directory exists
+      ansible.builtin.file:
+        path: /etc/systemd/system/ipa-healthcheck.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
 
     - name: "Download ipahealthcheck_exporter..."
       ansible.builtin.get_url:
@@ -49,6 +65,17 @@
       ansible.builtin.file:
         path: '{{ ipahealthcheck_exporter_temp_dir }}'
         state: absent
+
+- name: Configure ipa-healthcheck SuccessExitStatus
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/ipa-healthcheck.service.d/override.conf
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      [Service]
+      SuccessExitStatus=1
+  notify: Reload systemd
 
 - name: "Create systemd for ipahealthcheck_exporter"
   ansible.builtin.template:
