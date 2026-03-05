@@ -87,6 +87,17 @@
     - Reload systemd
     - Restart ipa-healthcheck
 
+- name: "Create ipa-healthcheck config"
+  ansible.builtin.template:
+    src: 'ipahealthcheck.conf.j2'
+    dest: '/etc/ipahealthcheck/ipahealthcheck.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload systemd
+    - Restart ipa-healthcheck
+
 - name: "Create systemd for ipahealthcheck_exporter"
   ansible.builtin.template:
     src: 'ipahealthcheck_exporter.service.j2'

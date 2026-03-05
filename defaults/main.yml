@@ -1,5 +1,5 @@
 ---
-# Binary install
+### Binary install
 ipahealthcheck_exporter_version: "0.0.17"
 ipahealthcheck_exporter_tgz: "ipahealthcheck_exporter-{{ ipahealthcheck_exporter_version }}.linux-amd64.tar.gz"
 ipahealthcheck_exporter_url: "{{ ipahealthcheck_exporter_base_url }}/v{{ ipahealthcheck_exporter_version }}/{{ ipahealthcheck_exporter_tgz }}"
@@ -8,7 +8,16 @@ ipahealthcheck_exporter_temp_dir: "/tmp/ipa"
 ipahealthcheck_exporter_force_install: false
 ipahealthcheck_exporter_service_state: "started"
 
-# Systemd options
+### Config
+ipahealthcheck_config: |
+  [default]
+  cert_expiration_days=28
+
+  [excludes]
+  source= ipahealthcheck.ipa.idns
+  check= IPADNARangeCheck
+
+### Systemd options
 ipahealthcheck_exporter_address: "0.0.0.0"
 ipahealthcheck_exporter_ipahealthcheck_log_path: "/var/log/ipa/healthcheck/healthcheck.log"
 ipahealthcheck_exporter_ipahealthcheck_path: "/bin/ipa-healthcheck"
